@@ -1,0 +1,18 @@
+{
+  "holdings": [
+    {"symbol": "RELIANCE", "quantity": 100},
+    {"symbol": "TCS", "quantity": 50},
+    {"symbol": "INFY", "quantity": 75},
+    {"symbol": "HDFCBANK", "quantity": 60},
+    {"symbol": "ICICIBANK", "quantity": 80},
+    {"symbol": "HINDUNILVR", "quantity": 30},
+    {"symbol": "ITC", "quantity": 200},
+    {"symbol": "SBIN", "quantity": 150},
+    {"symbol": "BHARTIARTL", "quantity": 100},
+    {"symbol": "LT", "quantity": 40}
+  ],
+  "num_simulations": 10000,
+  "num_days": 252,
+  "confidence_level": 0.995
+}
+

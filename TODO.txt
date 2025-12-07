@@ -1,0 +1,9 @@
+1. Why Monte Carlo? ✔
+2. What all methods? ✔
+3. Convert current simulation, add Skewed T distribution with egarch and monte carlo simulation ✔
+4. Optimise the above function (This is in varlytics_special_service1.py)
+5. Meta Prophet predicting
+6. PMS / Many stocks FRM ✔
+7. Paste following disclaimer in UI,
+## Disclaimer: Results are based on stochastic models and should be viewed as probabilistic estimates, not definitive predictions. 
+## Variations are expected in each run.

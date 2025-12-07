@@ -1,0 +1,317 @@
+{
+  "api_name": "Prophet Stock Price Prediction API",
+  "base_url": "http://localhost:8000/api",
+  "endpoints": [
+    {
+      "name": "Basic Stock Prediction",
+      "method": "GET",
+      "endpoint": "/prediction/{symbol}",
+      "description": "Get stock price prediction with confidence intervals",
+      "parameters": {
+        "path": {
+          "symbol": "Stock symbol (e.g., RELIANCE, TCS, INFY)"
+        },
+        "query": {
+          "forecast_days": "Number of days to forecast (1-365, default: 30)"
+        }
+      },
+      "examples": [
+        {
+          "title": "30-day prediction for RELIANCE",
+          "request": {
+            "url": "http://localhost:8000/api/prediction/RELIANCE?forecast_days=30",
+            "method": "GET"
+          },
+          "curl": "curl \"http://localhost:8000/api/prediction/RELIANCE?forecast_days=30\"",
+          "expected_response_structure": {
+            "symbol": "RELIANCE",
+            "yahoo_symbol": "RELIANCE.NS",
+            "analysis_period": {
+              "start_date": "2022-10-10",
+              "end_date": "2025-10-10",
+              "days_analyzed": 756
+            },
+            "current_price": {
+              "value": 2850.50,
+              "date": "2025-10-10"
+            },
+            "prediction": {
+              "forecast_days": 30,
+              "predicted_price": 2920.75,
+              "lower_bound": 2750.30,
+              "upper_bound": 3091.20,
+              "confidence_interval": "80%",
+              "price_change": 70.25,
+              "price_change_percent": 2.46,
+              "direction": "bullish"
+            },
+            "model_performance": {
+              "mae": 45.32,
+              "rmse": 58.67,
+              "mape": 1.89,
+              "description": "MAE: Mean Absolute Error, RMSE: Root Mean Squared Error, MAPE: Mean Absolute Percentage Error"
+            },
+            "forecast_data": [
+              {
+                "date": "2025-10-11",
+                "predicted_price": 2855.40,
+                "lower_bound": 2695.80,
+                "upper_bound": 3015.00
+              },
+              {
+                "date": "2025-10-12",
+                "predicted_price": 2860.15,
+                "lower_bound": 2698.50,
+                "upper_bound": 3021.80
+              }
+            ],
+            "historical_sample": [
+              {
+                "date": "2025-09-10",
+                "actual_price": 2800.25
+              },
+              {
+                "date": "2025-09-11",
+                "actual_price": 2815.60
+              }
+            ],
+            "trend_components": {
+              "has_weekly_seasonality": true,
+              "has_yearly_seasonality": true,
+              "changepoints_detected": 25
+            },
+            "disclaimer": "This prediction is based on historical data and Prophet's time series forecasting. It should not be considered as financial advice. Stock markets are inherently unpredictable and past performance does not guarantee future results."
+          }
+        },
+        {
+          "title": "7-day prediction for TCS",
+          "request": {
+            "url": "http://localhost:8000/api/prediction/TCS?forecast_days=7",
+            "method": "GET"
+          },
+          "curl": "curl \"http://localhost:8000/api/prediction/TCS?forecast_days=7\"",
+          "expected_response_structure": {
+            "symbol": "TCS",
+            "yahoo_symbol": "TCS.NS",
+            "prediction": {
+              "forecast_days": 7,
+              "predicted_price": 3550.20,
+              "lower_bound": 3420.15,
+              "upper_bound": 3680.25,
+              "confidence_interval": "80%",
+              "price_change": 25.40,
+              "price_change_percent": 0.72,
+              "direction": "bullish"
+            }
+          }
+        },
+        {
+          "title": "90-day prediction for INFY",
+          "request": {
+            "url": "http://localhost:8000/api/prediction/INFY?forecast_days=90",
+            "method": "GET"
+          },
+          "curl": "curl \"http://localhost:8000/api/prediction/INFY?forecast_days=90\"",
+          "expected_response_structure": {
+            "symbol": "INFY",
+            "yahoo_symbol": "INFY.NS",
+            "prediction": {
+              "forecast_days": 90,
+              "predicted_price": 1520.80,
+              "lower_bound": 1380.45,
+              "upper_bound": 1661.15,
+              "confidence_interval": "80%",
+              "price_change": -15.20,
+              "price_change_percent": -0.99,
+              "direction": "bearish"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Detailed Trend Analysis",
+      "method": "GET",
+      "endpoint": "/prediction/{symbol}/detailed",
+      "description": "Get detailed trend decomposition and analysis",
+      "parameters": {
+        "path": {
+          "symbol": "Stock symbol (e.g., RELIANCE, TCS, INFY)"
+        },
+        "query": {
+          "forecast_days": "Number of days to forecast (1-365, default: 30)"
+        }
+      },
+      "examples": [
+        {
+          "title": "Detailed analysis for HDFCBANK",
+          "request": {
+            "url": "http://localhost:8000/api/prediction/HDFCBANK/detailed?forecast_days=30",
+            "method": "GET"
+          },
+          "curl": "curl \"http://localhost:8000/api/prediction/HDFCBANK/detailed?forecast_days=30\"",
+          "expected_response_structure": {
+            "symbol": "HDFCBANK",
+            "yahoo_symbol": "HDFCBANK.NS",
+            "trend_analysis": [
+              {
+                "date": "2025-10-11",
+                "trend": 1650.20,
+                "weekly_effect": 12.50,
+                "yearly_effect": -5.30
+              },
+              {
+                "date": "2025-10-12",
+                "trend": 1652.80,
+                "weekly_effect": 8.70,
+                "yearly_effect": -5.25
+              }
+            ],
+            "changepoints": [
+              {
+                "date": "2024-08-15",
+                "index": 0
+              },
+              {
+                "date": "2024-11-20",
+                "index": 1
+              }
+            ],
+            "description": {
+              "trend": "The overall direction of the stock price",
+              "weekly_effect": "Weekly seasonal patterns",
+              "yearly_effect": "Yearly seasonal patterns",
+              "changepoints": "Dates where the trend significantly changed"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "error_responses": [
+    {
+      "scenario": "Stock symbol not found",
+      "status_code": 404,
+      "response": {
+        "detail": "Stock symbol 'INVALID' not found on NSE or BSE."
+      }
+    },
+    {
+      "scenario": "Invalid forecast period",
+      "status_code": 422,
+      "response": {
+        "detail": [
+          {
+            "loc": ["query", "forecast_days"],
+            "msg": "ensure this value is less than or equal to 365",
+            "type": "value_error.number.not_le"
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "Internal server error",
+      "status_code": 500,
+      "response": {
+        "detail": "Internal error: Unable to process prediction"
+      }
+    }
+  ],
+  "python_examples": [
+    {
+      "title": "Basic prediction with requests",
+      "code": "import requests\n\nresponse = requests.get(\n    'http://localhost:8000/api/prediction/RELIANCE',\n    params={'forecast_days': 30}\n)\n\nif response.status_code == 200:\n    data = response.json()\n    print(f\"Current: ₹{data['current_price']['value']}\")\n    print(f\"Predicted: ₹{data['prediction']['predicted_price']}\")\n    print(f\"Change: {data['prediction']['price_change_percent']}%\")\nelse:\n    print(f\"Error: {response.status_code}\")"
+    },
+    {
+      "title": "Compare multiple stocks",
+      "code": "import requests\nimport pandas as pd\n\nsymbols = ['RELIANCE', 'TCS', 'INFY', 'HDFCBANK']\nresults = []\n\nfor symbol in symbols:\n    response = requests.get(\n        f'http://localhost:8000/api/prediction/{symbol}',\n        params={'forecast_days': 7}\n    )\n    \n    if response.status_code == 200:\n        data = response.json()\n        results.append({\n            'Symbol': symbol,\n            'Current': data['current_price']['value'],\n            'Predicted': data['prediction']['predicted_price'],\n            'Change %': data['prediction']['price_change_percent'],\n            'Direction': data['prediction']['direction']\n        })\n\ndf = pd.DataFrame(results)\nprint(df.to_string(index=False))"
+    },
+    {
+      "title": "Get and visualize forecast",
+      "code": "import requests\nimport pandas as pd\nimport matplotlib.pyplot as plt\n\nresponse = requests.get(\n    'http://localhost:8000/api/prediction/RELIANCE',\n    params={'forecast_days': 30}\n)\n\ndata = response.json()\n\n# Extract forecast data\nforecast_df = pd.DataFrame(data['forecast_data'])\nforecast_df['date'] = pd.to_datetime(forecast_df['date'])\n\n# Plot\nplt.figure(figsize=(12, 6))\nplt.plot(forecast_df['date'], forecast_df['predicted_price'], label='Predicted', linewidth=2)\nplt.fill_between(\n    forecast_df['date'],\n    forecast_df['lower_bound'],\n    forecast_df['upper_bound'],\n    alpha=0.3,\n    label='80% Confidence Interval'\n)\nplt.xlabel('Date')\nplt.ylabel('Price (₹)')\nplt.title(f\"{data['symbol']} - 30 Day Price Forecast\")\nplt.legend()\nplt.grid(True, alpha=0.3)\nplt.xticks(rotation=45)\nplt.tight_layout()\nplt.show()"
+    }
+  ],
+  "javascript_examples": [
+    {
+      "title": "Fetch API example",
+      "code": "async function predictStock(symbol, days = 30) {\n    try {\n        const response = await fetch(\n            `http://localhost:8000/api/prediction/${symbol}?forecast_days=${days}`\n        );\n        \n        if (!response.ok) {\n            throw new Error(`HTTP error! status: ${response.status}`);\n        }\n        \n        const data = await response.json();\n        \n        console.log('Current Price:', data.current_price.value);\n        console.log('Predicted Price:', data.prediction.predicted_price);\n        console.log('Change:', data.prediction.price_change_percent + '%');\n        \n        return data;\n    } catch (error) {\n        console.error('Error:', error);\n    }\n}\n\n// Use it\npredictStock('RELIANCE', 30);"
+    },
+    {
+      "title": "Axios example with error handling",
+      "code": "const axios = require('axios');\n\nasync function getStockPrediction(symbol, days = 30) {\n    try {\n        const response = await axios.get(\n            `http://localhost:8000/api/prediction/${symbol}`,\n            { params: { forecast_days: days } }\n        );\n        \n        const data = response.data;\n        \n        return {\n            success: true,\n            symbol: data.symbol,\n            current: data.current_price.value,\n            predicted: data.prediction.predicted_price,\n            change: data.prediction.price_change_percent,\n            direction: data.prediction.direction\n        };\n    } catch (error) {\n        return {\n            success: false,\n            error: error.response?.data?.detail || error.message\n        };\n    }\n}\n\n// Use it\ngetStockPrediction('TCS', 30)\n    .then(result => console.log(result));"
+    }
+  ],
+  "curl_examples": [
+    {
+      "description": "Basic prediction",
+      "command": "curl \"http://localhost:8000/api/prediction/RELIANCE?forecast_days=30\""
+    },
+    {
+      "description": "With pretty JSON output",
+      "command": "curl \"http://localhost:8000/api/prediction/TCS?forecast_days=7\" | python -m json.tool"
+    },
+    {
+      "description": "Save to file",
+      "command": "curl \"http://localhost:8000/api/prediction/INFY?forecast_days=90\" -o prediction.json"
+    },
+    {
+      "description": "Detailed analysis",
+      "command": "curl \"http://localhost:8000/api/prediction/HDFCBANK/detailed?forecast_days=30\""
+    },
+    {
+      "description": "With headers",
+      "command": "curl -X GET \"http://localhost:8000/api/prediction/RELIANCE?forecast_days=30\" -H \"accept: application/json\""
+    }
+  ],
+  "tips": [
+    {
+      "topic": "Optimal Forecast Period",
+      "tip": "Use 7-14 days for highest accuracy, 30-60 days for balanced predictions, 90-180 days for strategic planning"
+    },
+    {
+      "topic": "Model Performance",
+      "tip": "MAPE < 5% is excellent, 5-10% is good, >10% use with caution"
+    },
+    {
+      "topic": "Confidence Intervals",
+      "tip": "80% confidence means 4 out of 5 times, actual price will fall within the range"
+    },
+    {
+      "topic": "First Request",
+      "tip": "First request takes 3-5 seconds as it downloads 3 years of data"
+    },
+    {
+      "topic": "Supported Symbols",
+      "tip": "Works with NSE (.NS) and BSE (.BO) stocks. API tries NSE first, then BSE"
+    }
+  ],
+  "best_practices": [
+    "Always check model performance metrics (MAE, RMSE, MAPE)",
+    "Use predictions as one input among many for decision making",
+    "Compare predictions across different forecast periods",
+    "Monitor confidence intervals - wider intervals indicate more uncertainty",
+    "Combine with fundamental and technical analysis",
+    "Run predictions regularly as new data becomes available",
+    "Never use predictions as sole basis for investment decisions"
+  ],
+  "supported_symbols": {
+    "large_cap_stocks": [
+      "RELIANCE",
+      "TCS",
+      "HDFCBANK",
+      "INFY",
+      "ICICIBANK",
+      "HINDUNILVR",
+      "SBIN",
+      "BHARTIARTL",
+      "ITC",
+      "LT"
+    ],
+    "indices": [
+      "NIFTY50",
+      "NIFTY",
+      "BANKNIFTY"
+    ]
+  }
+}
+
