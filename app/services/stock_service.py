@@ -1,16 +1,20 @@
-import yfinance as yf
+from pydantic import BaseModel
 from app.utils.index_utils import is_index, get_yahoo_symbol
+import yfinance as yf
+import pandas as pd
+
+# =========================
+# FUNDAMENTALS
+# =========================
 
 def get_stock_info(yahoo_symbol: str):
     stock = yf.Ticker(yahoo_symbol)
     info = stock.info
 
-    # Check if the response contains valid data
     if not info or info.get("longName") is None:
         return None
 
-    # Extract fundamental data
-    result = {
+    return {
         "symbol": yahoo_symbol,
         "longName": info.get("longName"),
         "sector": info.get("sector"),
@@ -31,13 +35,10 @@ def get_stock_info(yahoo_symbol: str):
         "earningsPerShare": info.get("epsTrailingTwelveMonths")
     }
 
-    return result
-
 
 def get_stock_fundamentals(symbol: str):
     symbol = symbol.upper()
 
-    # Check if it's an index first
     if is_index(symbol):
         yahoo_symbol = get_yahoo_symbol(symbol)
         data = get_stock_info(yahoo_symbol)
@@ -45,19 +46,76 @@ def get_stock_fundamentals(symbol: str):
             return data
         raise ValueError(f"Index '{symbol}' data not available.")
 
-    # For stocks, try NSE first
-    nse_symbol = f"{symbol}.NS"
-    data = get_stock_info(nse_symbol)
-
+    # NSE
+    data = get_stock_info(f"{symbol}.NS")
     if data:
         return data
 
-    # If NSE fails, try BSE
-    bse_symbol = f"{symbol}.BO"
-    data = get_stock_info(bse_symbol)
-
+    # BSE
+    data = get_stock_info(f"{symbol}.BO")
     if data:
         return data
 
     # If both fail, raise an error
     raise ValueError(f"Stock symbol '{symbol}' not found on NSE or BSE.")
+
+
+# =========================
+# MACD
+# =========================
+
+class MACDRequest(BaseModel):
+    symbol: str
+    period: str = "6mo"
+    interval: str = "1d"
+
+
+def calculate_macd(df: pd.DataFrame) -> pd.DataFrame:
+    df["EMA12"] = df["Close"].ewm(span=12, adjust=False).mean()
+    df["EMA26"] = df["Close"].ewm(span=26, adjust=False).mean()
+    df["MACD"] = df["EMA12"] - df["EMA26"]
+    df["Signal"] = df["MACD"].ewm(span=9, adjust=False).mean()
+    df["Histogram"] = df["MACD"] - df["Signal"]
+    return df
+
+
+def resolve_yahoo_symbol(symbol: str) -> str:
+    """
+    Reuse the same NSE/BSE/index logic for MACD
+    """
+    symbol = symbol.upper()
+
+    if is_index(symbol):
+        return get_yahoo_symbol(symbol)
+
+    for suffix in [".NS", ".BO"]:
+        test_symbol = f"{symbol}{suffix}"
+        data = yf.download(test_symbol, period="5d", progress=False)
+        if not data.empty:
+            return test_symbol
+
+    raise ValueError(f"Invalid symbol '{symbol}'")
+
+
+def get_macd_data(symbol: str, period: str, interval: str):
+    yahoo_symbol = resolve_yahoo_symbol(symbol)
+
+    stock = yf.download(
+        yahoo_symbol,
+        period=period,
+        interval=interval,
+        progress=False
+    )
+
+    if stock.empty:
+        raise ValueError("No price data available")
+
+    stock = calculate_macd(stock)
+
+    return {
+        "symbol": yahoo_symbol,
+        "dates": stock.index.strftime("%Y-%m-%d").tolist(),
+        "macd": stock["MACD"].round(4).fillna(0).tolist(),
+        "signal": stock["Signal"].round(4).fillna(0).tolist(),
+        "histogram": stock["Histogram"].round(4).fillna(0).tolist()
+    }
